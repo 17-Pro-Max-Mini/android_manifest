@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="g81-public" fetch="@G81_PUBLIC_FETCH@" />
+  <project name="android_device_alps_g81"
+           path="device/alps/g81"
+           remote="g81-public"
+           revision="refs/heads/lineage-15.1" />
+  <project name="android_patches_g81"
+           path="patches/g81"
+           remote="g81-public"
+           revision="refs/heads/lineage-15.1" />
+  <project name="mtk_bootlogo_g81"
+           path="tools/mtk_bootlogo_g81"
+           remote="g81-public"
+           revision="refs/heads/main" />
+</manifest>
