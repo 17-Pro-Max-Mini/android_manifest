@@ -20,8 +20,8 @@ for every release.
 `stock_firmware_g81` is a recovery archive. It is deliberately absent from
 the LineageOS and TWRP manifests and is not an input to either build.
 
-The GitHub organization name is deliberately not hard-coded. Set its public
-and private fetch roots before the first sync:
+The build script defaults to the published `17-Pro-Max-Mini` organization.
+Override the public or private fetch roots only when using a mirror:
 
 ```bash
 export G81_PUBLIC_FETCH=https://github.com/17-Pro-Max-Mini
