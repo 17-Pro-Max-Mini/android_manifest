@@ -3,8 +3,8 @@ set -euo pipefail
 HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")";pwd)
 ACTION=${1:-help}; VERSION=${2:-}; TREE=${3:-}
 case "$VERSION" in
-  15.1) TAG=g81-15.1-20261019; MANIFEST=releases/20261019.xml ;;
-  17.1) TAG=g81-17.1-20261019-r2; MANIFEST=releases/20261019-r2.xml ;;
+  15.1) TAG=g81-15.1-20261019-r2; MANIFEST=releases/20261019.xml ;;
+  17.1) TAG=g81-17.1-20261019-r3; MANIFEST=releases/20261019-r2.xml ;;
   *) echo 'Usage: ./g81-build sync|check|build|graph 15.1|17.1 /absolute/ext4/source'; exit 2 ;;
 esac
 [[ "$TREE" = /* ]] || { echo 'Source path must be absolute'; exit 2; }
