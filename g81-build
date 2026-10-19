@@ -3,8 +3,8 @@ set -euo pipefail
 HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")";pwd)
 ACTION=${1:-help}; VERSION=${2:-}; TREE=${3:-}
 case "$VERSION" in
-  15.1) TAG=g81-15.1-20261019-r2; MANIFEST=releases/20261019.xml ;;
-  17.1) TAG=g81-17.1-20261019-r3; MANIFEST=releases/20261019-r2.xml ;;
+  15.1) TAG=g81-15.1-env-20261019; MANIFEST=releases/20261019-final.xml ;;
+  17.1) TAG=g81-17.1-env-20261019; MANIFEST=releases/20261019-final.xml ;;
   *) echo 'Usage: ./g81-build sync|check|build|graph 15.1|17.1 /absolute/ext4/source'; exit 2 ;;
 esac
 [[ "$TREE" = /* ]] || { echo 'Source path must be absolute'; exit 2; }
@@ -16,6 +16,7 @@ case "$ACTION" in
     repo init -u https://github.com/17-Pro-Max-Mini/android_manifest.git \
       -b "refs/tags/$TAG" -m "$MANIFEST" --git-lfs --no-clone-bundle
     repo sync -c --no-tags -j"${G81_SYNC_JOBS:-8}"
+    git -C vendor/alps/g81 lfs install --local
     git -C vendor/alps/g81 lfs pull
     python3 "patches/g81/lineage-$VERSION/apply.py" "$TREE"
     python3 "$HERE/scripts/verify-inputs.py" "$VERSION" "$TREE"

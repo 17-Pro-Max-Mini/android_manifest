@@ -674,7 +674,7 @@
   <project name="toolchain/binutils" remote="aosp" revision="a4125cf8aeab9dfeac00f1bda80645987897152f" upstream="refs/tags/android-8.1.0_r52" dest-branch="refs/tags/android-8.1.0_r52" groups="pdk" />
   <repo-hooks in-project="platform/tools/repohooks" enabled-list="pre-upload" />
   <remote name="g81" fetch="https://github.com/17-Pro-Max-Mini" />
-  <project name="android_device_alps_g81" path="device/alps/g81" remote="g81" revision="328dc2d277d69838ec85d37ba9ff0801d994be57" upstream="refs/heads/lineage-15.1" />
+  <project name="android_device_alps_g81" path="device/alps/g81" remote="g81" revision="21d974cf1c73616d6c3ee8905bc04e562478bcfe" upstream="refs/heads/lineage-15.1" />
   <project name="proprietary_vendor_alps_g81" path="vendor/alps/g81" remote="g81" revision="91d0ef51a95ba563e9f75b601b22a431639f3846" upstream="refs/heads/lineage-15.1" />
   <project name="android_patches_g81" path="patches/g81" remote="g81" revision="9bbb458a57977a5f1b4c5614c91a17c12edbf02f" upstream="refs/heads/lineage-15.1" />
 </manifest>
