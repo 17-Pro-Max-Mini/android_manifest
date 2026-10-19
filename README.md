@@ -1,73 +1,35 @@
-# G81 Android build manifest
+# G81 — LineageOS 15.1
 
-This is the single supported entry point for reproducible G81 builds. It keeps
-the upstream Android manifests authoritative, adds the G81 repositories as
-local manifests, builds in a pinned Ubuntu 20.04 container, applies the public
-patch series, validates partition artifacts, and exports a SHA-pinned manifest
-for every release.
+Reproducible source/input preservation for MT6580 G81 (384x854, 1 GiB).
+Use **lineage-15.1** in device, vendor, patches and manifest repositories.
+The 15.1 port is the historical Android 8.1 environment; the currently used
+phone runs 17.1. Preserving both does not mean both were freshly flashed today.
 
-## Repository names and branches
+## Fresh setup on Linux / ext4
 
-| Repository | Visibility | Branches |
-| --- | --- | --- |
-| `android_manifest` | public | `main` |
-| `android_device_alps_g81` | public | `lineage-15.1`, `twrp-8.1` |
-| `android_patches_g81` | public | `lineage-15.1` |
-| `mtk_bootlogo_g81` | public | `main` |
-| `proprietary_vendor_alps_g81` | private, Git LFS | `lineage-15.1`, `twrp-8.1` |
-| `stock_firmware_g81` | private, Git LFS | `main` |
+Install git, git-lfs, repo, python3 and the Android host dependencies. Allocate
+200 GiB+ for each full source/output tree. 15.1 builds in the retained Ubuntu
+20.04 / JDK8 container; 17.1 uses the source-pinned JDK9 selected by Soong, not
+the host's Java 8. Host OpenJDK11 and libncurses5 were installed on the tested
+Ubuntu22.04 machine. See [restore/setup details](docs/RESTORE.md).
 
-`stock_firmware_g81` is a recovery archive. It is deliberately absent from
-the LineageOS and TWRP manifests and is not an input to either build.
-
-The build script defaults to the published `17-Pro-Max-Mini` organization.
-Override the public or private fetch roots only when using a mirror:
-
-```bash
-export G81_PUBLIC_FETCH=https://github.com/17-Pro-Max-Mini
-export G81_PRIVATE_FETCH=ssh://git@github.com/17-Pro-Max-Mini
-export G81_BUILD_ROOT=/path/to/ext4/G81
+```sh
+git clone -b lineage-15.1 https://github.com/17-Pro-Max-Mini/android_manifest.git
+cd android_manifest
+./g81-build sync 15.1 /absolute/ext4/g81-15.1
+./g81-build check 15.1 /absolute/ext4/g81-15.1
+G81_BUILD_JOBS=28 ./g81-build build 15.1 /absolute/ext4/g81-15.1
 ```
 
-`G81_PRIVATE_FETCH` is optional during source inspection, but both builds need
-the private vendor checkout. Git credentials remain in the host Git/SSH setup;
-the scripts do not store tokens.
+All project SHAs, including the matching G81 repositories, are pinned in the
+release XML. Sync initializes a **new** tree; it does not reset an old dirty
+checkout. Preserve local work before manually synchronizing an existing tree.
+Both versions use LFS vendor inputs. The build command does not flash a device.
 
-The host needs Docker Engine, Git, a POSIX shell, and an ext4 build volume with
-at least 150 GiB free. The container supplies the legacy Android toolchain,
-`repo`, Git LFS, Java 8, image tools, and build dependencies. The scripts use
-the current user's numeric UID/GID, write only below `G81_BUILD_ROOT`, and
-never flash a connected device.
+## Verification boundaries
 
-## Build workflow
-
-```bash
-./g81 setup
-./g81 sync lineage
-./g81 build lineage
-./g81 validate lineage
-./g81 release lineage
-
-./g81 sync twrp
-./g81 build twrp
-./g81 validate twrp
-./g81 release twrp
-```
-
-Build parallelism defaults to all logical CPUs. Override it with
-`G81_BUILD_JOBS` or `G81_SYNC_JOBS`. The scripts never flash a device.
-
-The Lineage target selects `lineage_g81-user` and runs `mka bacon systemimage`:
-it produces the normal flashable OTA zip and a standalone `system.img`. The
-latter is required by the legacy partition layout and is checked by the
-validator before release. TWRP remains an `omni_g81-eng` recovery build, as is
-normal for this legacy recovery branch.
-
-Development manifests track the named branches. `./g81 release` runs
-`repo manifest -r`, so the release directory contains the exact SHA for every
-checked-out project alongside artifact hashes. Keep the generated Lineage
-release private unless redistribution rights for every bundled proprietary
-component have been reviewed.
-
-See `NAMING.md` for the naming decisions and the boundary between the public
-source repositories and the private vendor repository.
+Input hashes and forward/reverse patch tests are checked separately from
+compilation and hardware tests. Read the release verification report for the
+actual commands/results. A graph-only or Ninja -n test is not a full ROM build.
+The pinned vendor image is the supported binary input; a fully stock-to-vendor
+regeneration pipeline and an open-source kernel replacement are not claimed.

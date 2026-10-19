@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -euo pipefail
+HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")";pwd)
+ACTION=${1:-help}; VERSION=${2:-}; TREE=${3:-}
+case "$VERSION" in
+  15.1) TAG=g81-15.1-20261019; MANIFEST=releases/20261019.xml ;;
+  17.1) TAG=g81-17.1-20261019-r2; MANIFEST=releases/20261019-r2.xml ;;
+  *) echo 'Usage: ./g81-build sync|check|build|graph 15.1|17.1 /absolute/ext4/source'; exit 2 ;;
+esac
+[[ "$TREE" = /* ]] || { echo 'Source path must be absolute'; exit 2; }
+JOBS=${G81_BUILD_JOBS:-28}
+case "$ACTION" in
+  sync)
+    [[ ! -e "$TREE/.repo" ]] || { echo 'Existing repo tree retained; choose a fresh destination'; exit 1; }
+    mkdir -p "$TREE"; cd "$TREE"
+    repo init -u https://github.com/17-Pro-Max-Mini/android_manifest.git \
+      -b "refs/tags/$TAG" -m "$MANIFEST" --git-lfs --no-clone-bundle
+    repo sync -c --no-tags -j"${G81_SYNC_JOBS:-8}"
+    git -C vendor/alps/g81 lfs pull
+    python3 "patches/g81/lineage-$VERSION/apply.py" "$TREE"
+    python3 "$HERE/scripts/verify-inputs.py" "$VERSION" "$TREE"
+    ;;
+  check|build|graph)
+    python3 "$HERE/scripts/verify-inputs.py" "$VERSION" "$TREE"
+    python3 "$TREE/patches/g81/lineage-$VERSION/apply.py" --check "$TREE"
+    [[ "$ACTION" != check ]] || exit 0
+    python3 "$TREE/patches/g81/lineage-$VERSION/apply.py" "$TREE"
+    TARGETS='bacon systemimage vendorimage'; [[ "$ACTION" != graph ]] || TARGETS=nothing
+    if [[ "$VERSION" = 15.1 ]]; then
+      IMAGE=${G81_BUILD_IMAGE:-g81em1-android-build:20.04}
+      docker image inspect "$IMAGE" >/dev/null
+      # OUT_DIR must be inside TREE (or mount it separately yourself).
+      docker run --rm --init --network=none --user "$(id -u):$(id -g)" \
+        -v "$TREE:$TREE" -w "$TREE" \
+        -e "OUT_DIR=${OUT_DIR:-out}" -e LC_ALL=C -e LANG=C \
+        -e "G81_BUILD_JOBS=$JOBS" -e "G81_TARGETS=$TARGETS" "$IMAGE" \
+        bash -c 'set -e; source build/envsetup.sh; lunch lineage_g81-userdebug; make -j"$G81_BUILD_JOBS" $G81_TARGETS'
+    else
+      cd "$TREE"; set +u
+      source build/envsetup.sh
+      lunch lineage_g81-userdebug
+      m -j"$JOBS" $TARGETS
+    fi
+    ;;
+  *) echo 'Usage: ./g81-build sync|check|build|graph 15.1|17.1 /absolute/ext4/source'; exit 2 ;;
+esac
