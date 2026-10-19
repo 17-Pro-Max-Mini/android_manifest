@@ -1,0 +1,4 @@
+# Jack server 1.3 creates an SSLv3 SSLContext which negotiates TLS 1.0.
+# Modern OpenJDK 8 disables TLS 1.0 globally, so relax only the isolated Jack
+# server JVM used for this Android 8.1 build.
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1.1, RC4, DES, MD5withRSA, DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL, ECDH, include jdk.disabled.namedCurves
