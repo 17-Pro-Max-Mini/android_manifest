@@ -1,0 +1,14 @@
+{
+  "version": "17.1",
+  "tag": "g81-17.1-env-20261019",
+  "integration": {
+    "android_device_alps_g81": "0ad633ba3f8f916d771c05e26589aadde81ea6f2",
+    "proprietary_vendor_alps_g81": "3a068cc1c5f647053c99b019483098e336c63864",
+    "android_patches_g81": "8b855315e87a12e3a91149646a27e0dd535c41fb"
+  },
+  "upstream_projects": 789,
+  "vendor_sha256": "9d4bee1e55a3a274e7e06ea8685c77bf2a260466e1a3c148edb8f414d68350b8",
+  "publication_scope": "source and binary-input preservation",
+  "full_clean_build": false,
+  "clean_flash_test": false
+}

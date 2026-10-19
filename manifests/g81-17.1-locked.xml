@@ -839,7 +839,7 @@
   <project name="toolchain/pgo-profiles" remote="aosp" revision="248f97c5fdc39400ebcb51b72ba2263fe12781a7" upstream="refs/tags/android-10.0.0_r41" dest-branch="refs/tags/android-10.0.0_r41" groups="pdk" />
   <repo-hooks in-project="platform/tools/repohooks" enabled-list="pre-upload" />
   <remote name="g81" fetch="https://github.com/17-Pro-Max-Mini" />
-  <project name="android_device_alps_g81" path="device/alps/g81" remote="g81" revision="5cdef1a62928d97310aeb35df5ce01329186cb6f" upstream="refs/heads/lineage-17.1" />
+  <project name="android_device_alps_g81" path="device/alps/g81" remote="g81" revision="0ad633ba3f8f916d771c05e26589aadde81ea6f2" upstream="refs/heads/lineage-17.1" />
   <project name="proprietary_vendor_alps_g81" path="vendor/alps/g81" remote="g81" revision="3a068cc1c5f647053c99b019483098e336c63864" upstream="refs/heads/lineage-17.1" />
   <project name="android_patches_g81" path="patches/g81" remote="g81" revision="8b855315e87a12e3a91149646a27e0dd535c41fb" upstream="refs/heads/lineage-17.1" />
 </manifest>
