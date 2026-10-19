@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <include name="manifests/lineage-17.1-upstream.xml"/>
+  <remote name="g81-public" fetch="https://github.com/17-Pro-Max-Mini"/>
+  <remote name="g81-private" fetch="ssh://git@github.com/17-Pro-Max-Mini"/>
+  <project name="android_device_alps_g81" path="device/alps/g81" remote="g81-public" revision="refs/heads/lineage-17.1"/>
+  <project name="android_patches_g81" path="patches/g81" remote="g81-public" revision="refs/heads/lineage-17.1"/>
+  <project name="proprietary_vendor_alps_g81" path="vendor/alps/g81" remote="g81-private" revision="refs/heads/lineage-17.1"/>
+</manifest>

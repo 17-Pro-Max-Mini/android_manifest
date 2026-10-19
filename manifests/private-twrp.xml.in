@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-  <remote name="g81-private" fetch="@G81_PRIVATE_FETCH@" />
-  <project name="proprietary_vendor_alps_g81"
-           path="vendor/alps/g81"
-           remote="g81-private"
-           revision="refs/heads/twrp-8.1" />
-</manifest>

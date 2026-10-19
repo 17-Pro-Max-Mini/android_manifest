@@ -1,73 +1,47 @@
-# G81 Android build manifest
+# G81 — LineageOS 17.1 / Android 10
 
-This is the single supported entry point for reproducible G81 builds. It keeps
-the upstream Android manifests authoritative, adds the G81 repositories as
-local manifests, builds in a pinned Ubuntu 20.04 container, applies the public
-patch series, validates partition artifacts, and exports a SHA-pinned manifest
-for every release.
+Daily-use source snapshot: **g81-17.1-20261019**. Existing `main`, `lineage-15.1`
+and TWRP branches are retained; this branch describes the Android 10 port.
+Read [the tested status and remaining issues](docs/STATUS-20261019.md).
 
-## Repository names and branches
+## Repositories
+| Project | Branch | Contents |
+|---|---|---|
+| android_device_alps_g81 | lineage-17.1 | device configuration, overlays, native helper sources |
+| android_patches_g81 | lineage-17.1 | exact patches for 12 upstream projects |
+| proprietary_vendor_alps_g81 | lineage-17.1 (private) | pinned vendor image, kernel and required device prebuilts; Git LFS |
+| android_manifest | lineage-17.1 | upstream SHA lock, integration lock and build entry point |
 
-| Repository | Visibility | Branches |
-| --- | --- | --- |
-| `android_manifest` | public | `main` |
-| `android_device_alps_g81` | public | `lineage-15.1`, `twrp-8.1` |
-| `android_patches_g81` | public | `lineage-15.1` |
-| `mtk_bootlogo_g81` | public | `main` |
-| `proprietary_vendor_alps_g81` | private, Git LFS | `lineage-15.1`, `twrp-8.1` |
-| `stock_firmware_g81` | private, Git LFS | `main` |
+Upstream is LineageOS-Revived. `manifests/lineage-17.1-upstream.xml` pins every
+exported upstream project. `releases/20261019.xml` additionally pins the G81
+device/vendor/patch repositories. An upstream-local commit is exported as a
+patch against its real upstream parent, not as an unreachable manifest SHA.
 
-`stock_firmware_g81` is a recovery archive. It is deliberately absent from
-the LineageOS and TWRP manifests and is not an input to either build.
+## Reproduce sources
+Use Linux/ext4, Git, Git LFS, repo, Python 3, and authenticated SSH access to the
+existing private vendor repository. Build with OpenJDK 11 and normal Android 10
+host dependencies. The tested host was Ubuntu 22.04; old legacy Java 8 build
+instructions in other branches do not apply here. A fresh source/output tree
+needs substantially more disk than an incremental build (budget 200 GiB+).
 
-The build script defaults to the published `17-Pro-Max-Mini` organization.
-Override the public or private fetch roots only when using a mirror:
-
-```bash
-export G81_PUBLIC_FETCH=https://github.com/17-Pro-Max-Mini
-export G81_PRIVATE_FETCH=ssh://git@github.com/17-Pro-Max-Mini
-export G81_BUILD_ROOT=/path/to/ext4/G81
+```sh
+git clone -b lineage-17.1 https://github.com/17-Pro-Max-Mini/android_manifest.git
+cd android_manifest
+./g81-17.1 sync /path/on/ext4/g81-lineage-17.1
+./g81-17.1 check /path/on/ext4/g81-lineage-17.1
+G81_BUILD_JOBS=28 ./g81-17.1 build /path/on/ext4/g81-lineage-17.1
 ```
 
-`G81_PRIVATE_FETCH` is optional during source inspection, but both builds need
-the private vendor checkout. Git credentials remain in the host Git/SSH setup;
-the scripts do not store tokens.
+The script does not flash a phone or format partitions. `--check` verifies
+patch applicability or already-applied result hashes without resetting local
+work. Proprietary binaries stay in the existing private repository; no device
+logs, NVRAM/nvdata or personal user data are published.
 
-The host needs Docker Engine, Git, a POSIX shell, and an ext4 build volume with
-at least 150 GiB free. The container supplies the legacy Android toolchain,
-`repo`, Git LFS, Java 8, image tools, and build dependencies. The scripts use
-the current user's numeric UID/GID, write only below `G81_BUILD_ROOT`, and
-never flash a connected device.
+The public device tree's `prebuilt` symlink resolves into the private vendor
+checkout at the expected repo layout. The private image is the cumulative,
+tested Android 10 vendor input, not the unmodified Oreo stock vendor.
 
-## Build workflow
-
-```bash
-./g81 setup
-./g81 sync lineage
-./g81 build lineage
-./g81 validate lineage
-./g81 release lineage
-
-./g81 sync twrp
-./g81 build twrp
-./g81 validate twrp
-./g81 release twrp
-```
-
-Build parallelism defaults to all logical CPUs. Override it with
-`G81_BUILD_JOBS` or `G81_SYNC_JOBS`. The scripts never flash a device.
-
-The Lineage target selects `lineage_g81-user` and runs `mka bacon systemimage`:
-it produces the normal flashable OTA zip and a standalone `system.img`. The
-latter is required by the legacy partition layout and is checked by the
-validator before release. TWRP remains an `omni_g81-eng` recovery build, as is
-normal for this legacy recovery branch.
-
-Development manifests track the named branches. `./g81 release` runs
-`repo manifest -r`, so the release directory contains the exact SHA for every
-checked-out project alongside artifact hashes. Keep the generated Lineage
-release private unless redistribution rights for every bundled proprietary
-component have been reviewed.
-
-See `NAMING.md` for the naming decisions and the boundary between the public
-source repositories and the private vendor repository.
+This publication freezes a working runtime and its source/input changes.
+Patch apply/reverse and fresh repository checkout/input verification are
+tested separately from a full build or clean flash. Those tests are recorded
+explicitly in the status document rather than implied by a release tag.

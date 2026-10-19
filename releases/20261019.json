@@ -1,0 +1,39 @@
+{
+  "snapshot": "g81-17.1-20261019",
+  "date": "2026-10-19",
+  "branch": "lineage-17.1",
+  "repositories": {
+    "android_device_alps_g81": {
+      "path": "device/alps/g81",
+      "commit": "08ede6f8ee0eb642500982a2aae4dee02dc62674",
+      "url": "https://github.com/17-Pro-Max-Mini/android_device_alps_g81",
+      "private": false
+    },
+    "proprietary_vendor_alps_g81": {
+      "path": "vendor/alps/g81",
+      "commit": "45332cdb838971f536bf9a480f506b590d463834",
+      "url": "https://github.com/17-Pro-Max-Mini/proprietary_vendor_alps_g81",
+      "private": true
+    },
+    "android_patches_g81": {
+      "path": "patches/g81",
+      "commit": "8b855315e87a12e3a91149646a27e0dd535c41fb",
+      "url": "https://github.com/17-Pro-Max-Mini/android_patches_g81",
+      "private": false
+    }
+  },
+  "upstream_manifest_sha256": "96a4d9b059624854d92f4fc00c0c8361a0cbbd8cc607d4da8f42800d9e3bb9f2",
+  "vendor_image_sha256": "9d4bee1e55a3a274e7e06ea8685c77bf2a260466e1a3c148edb8f414d68350b8",
+  "patch_projects": 12,
+  "patched_files": 36,
+  "private_input_files": 297,
+  "tests": {
+    "patch_applicability": "PASS",
+    "patch_apply_hashes": "PASS",
+    "patch_idempotency": "PASS",
+    "rollback_on_another_copy": "PASS",
+    "repository_layout_inputs": "PASS",
+    "full_clean_build": "NOT_PERFORMED",
+    "clean_flash": "NOT_PERFORMED"
+  }
+}

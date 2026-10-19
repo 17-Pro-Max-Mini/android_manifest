@@ -1,0 +1,36 @@
+#!/bin/bash
+set -euo pipefail
+HERE=$(cd "$(dirname "$0")"; pwd)
+ACTION=${1:-help}
+TREE=${2:-}
+JOBS=${G81_BUILD_JOBS:-28}
+case "$ACTION" in
+  sync)
+    : "${TREE:?Usage: ./g81-17.1 sync /absolute/ext4/source/path}"
+    mkdir -p "$TREE"; cd "$TREE"
+    repo init -u https://github.com/17-Pro-Max-Mini/android_manifest.git \
+      -b refs/tags/g81-17.1-20261019 -m releases/20261019.xml --git-lfs --no-clone-bundle
+    repo sync -c --no-tags -j"${G81_SYNC_JOBS:-8}"
+    git -C vendor/alps/g81 lfs pull
+    python3 patches/g81/lineage-17.1/apply.py "$PWD"
+    ;;
+  check)
+    : "${TREE:?Usage: ./g81-17.1 check SOURCE}"
+    python3 "$HERE/scripts/check-17.1.py" "$TREE"
+    python3 "$TREE/patches/g81/lineage-17.1/apply.py" --check "$TREE"
+    ;;
+  build)
+    : "${TREE:?Usage: ./g81-17.1 build SOURCE}"
+    python3 "$HERE/scripts/check-17.1.py" "$TREE"
+    python3 "$TREE/patches/g81/lineage-17.1/apply.py" "$TREE"
+    export JAVA_HOME=${JAVA_HOME:-/usr/lib/jvm/java-11-openjdk-amd64}
+    export PATH="$JAVA_HOME/bin:$PATH"
+    cd "$TREE"
+    # Android 10 envsetup/lunch use optional, initially-unset shell variables.
+    set +u
+    source build/envsetup.sh
+    lunch lineage_g81-userdebug
+    m -j"$JOBS" bacon systemimage vendorimage
+    ;;
+  *) echo 'Usage: ./g81-17.1 sync|check|build /absolute/ext4/source/path';;
+esac

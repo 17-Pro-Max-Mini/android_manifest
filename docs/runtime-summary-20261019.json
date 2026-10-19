@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-19",
+  "uptime_days": 12.38,
+  "boot_completed": true,
+  "selinux": "Enforcing",
+  "retained_logcat_fatal": 0,
+  "observe_seconds": 60,
+  "observe_fatal": 0,
+  "observe_exit": 124,
+  "egl_cancel_buffers": 15,
+  "dropbox_tags": {
+    "system_server_strictmode": 34
+  },
+  "latest_native_tombstone": "2026-10-07 11:53",
+  "latest_anr_file": "2026-10-07 01:01",
+  "battery_voltage_mV": 3907,
+  "battery_temperature_deciC": 250
+}
